@@ -19,8 +19,8 @@ from unet import UNet
 from utils.data_loading import BasicDataset, CarvanaDataset
 from utils.dice_score import dice_loss
 
-dir_img = Path('./data/imgs/')
-dir_mask = Path('./data/masks/')
+dir_img = Path('./data/res_imgs/')
+dir_mask = Path('./data/res_masks/')
 dir_checkpoint = Path('./checkpoints/')
 
 
@@ -43,8 +43,10 @@ def train_model(
         dataset = CarvanaDataset(dir_img, dir_mask, img_scale)
     except (AssertionError, RuntimeError, IndexError):
         dataset = BasicDataset(dir_img, dir_mask, img_scale)
-
+    
     # 2. Split into train / validation partitions
+    print()
+    print("---"*50)
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))

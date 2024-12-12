@@ -107,7 +107,9 @@ if __name__ == '__main__':
                            device=device)
 
         if not args.no_save:
-            out_filename = out_files[i]
+            #out_filename = out_files[i]
+            #out_filename = os.path.splitext(filename)[0]#out_files[i]
+            out_filename = os.path.join("data/output/", f"{os.path.basename(filename)}")
             result = mask_to_image(mask, mask_values)
             result.save(out_filename)
             logging.info(f'Mask saved to {out_filename}')
