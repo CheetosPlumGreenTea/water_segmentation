@@ -51,8 +51,8 @@ def calculate_mean_iou(true_mask_dir, pred_mask_dir):
 
 if __name__ == "__main__":
     # Define paths to the ground truth and predicted mask directories
-    true_mask_dir = 'data/my_masks'  # Replace with your ground truth mask directory
-    pred_mask_dir = 'data/output'  # Replace with your predicted mask directory
+    true_mask_dir = 'data/testing_dataset/mask'  # Replace with your ground truth mask directory
+    pred_mask_dir = 'data/testing_dataset/output'  # Replace with your predicted mask directory
 
     # Calculate the mean IoU across all mask images
     mean_iou = calculate_mean_iou(true_mask_dir, pred_mask_dir)

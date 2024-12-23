@@ -45,12 +45,12 @@ def resize_and_process_images_in_folder(input_folder, output_folder, new_width, 
             resize_image(input_path, output_path, new_width, new_height, apply_binarization)
 
 # 範例使用
-input_folder = 'data/my_masks'  # 輸入資料夾
-output_folder = 'data/res_masks'  # 輸出資料夾
-new_width = 320  # 新的寬度
-new_height = 320  # 新的高度
+input_folder = 'data/my_imgs'  # 輸入資料夾
+output_folder = 'data/res_imgs'  # 輸出資料夾
+new_width = 1024  # 新的寬度
+new_height = 1024  # 新的高度
 
 # 設定是否需要二值化處理，True 表示需要二值化，False 表示不需要
-apply_binarization = True  # 可以改為 False 來跳過二值化
+apply_binarization = False  # 可以改為 False 來跳過二值化
 
 resize_and_process_images_in_folder(input_folder, output_folder, new_width, new_height, apply_binarization)

@@ -7,6 +7,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
+import cv2
 
 from utils.data_loading import BasicDataset
 from unet import UNet
@@ -59,7 +60,7 @@ def get_output_filenames(args):
     return args.output or list(map(_generate_name, args.input))
 
 
-def mask_to_image(mask: np.ndarray, mask_values):
+def mask_to_image(mask: np.ndarray, mask_values, original_img):
     if isinstance(mask_values[0], list):
         out = np.zeros((mask.shape[-2], mask.shape[-1], len(mask_values[0])), dtype=np.uint8)
     elif mask_values == [0, 1]:
@@ -73,7 +74,9 @@ def mask_to_image(mask: np.ndarray, mask_values):
     for i, v in enumerate(mask_values):
         out[mask == i] = v
 
-    return Image.fromarray(out)
+    img = out
+    resized_img = cv2.resize(img, (original_img.size[0], original_img.size[1]))
+    return Image.fromarray(resized_img)
 
 
 if __name__ == '__main__':
@@ -98,8 +101,13 @@ if __name__ == '__main__':
 
     for i, filename in enumerate(in_files):
         logging.info(f'Predicting image {filename} ...')
-        img = Image.open(filename)
-
+        # original_img = cv2.imread(filename)
+        # # img = cv2.resize(original_img, (320, 320))
+        # img = Image.fromarray(original_img)
+        original_img = Image.open(filename)
+        img = np.array(original_img)
+        img = cv2.resize(img, (1024, 1024))
+        img = Image.fromarray(img)
         mask = predict_img(net=net,
                            full_img=img,
                            scale_factor=args.scale,
@@ -108,9 +116,9 @@ if __name__ == '__main__':
 
         if not args.no_save:
             #out_filename = out_files[i]
-            #out_filename = os.path.splitext(filename)[0]#out_files[i]
-            out_filename = os.path.join("data/output/", f"{os.path.basename(filename)}")
-            result = mask_to_image(mask, mask_values)
+            basename = os.path.splitext(os.path.basename(filename))[0]
+            out_filename = os.path.join("data/testing_dataset/output/", f"{basename}.png")
+            result = mask_to_image(mask, mask_values, original_img)
             result.save(out_filename)
             logging.info(f'Mask saved to {out_filename}')
 

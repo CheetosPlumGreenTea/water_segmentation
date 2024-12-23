@@ -4,17 +4,35 @@ from torch import Tensor
 
 def dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, epsilon: float = 1e-6):
     # Average of Dice coefficient for all batches, or for a single mask
+    # assert input.size() == target.size()
+    # assert input.dim() == 3 or not reduce_batch_first
+
+    # sum_dim = (-1, -2) if input.dim() == 2 or not reduce_batch_first else (-1, -2, -3)
+
+    # inter = 2 * (input * target).sum(dim=sum_dim)
+    # sets_sum = input.sum(dim=sum_dim) + target.sum(dim=sum_dim)
+    # sets_sum = torch.where(sets_sum == 0, inter, sets_sum)
+
+    # dice = (inter + epsilon) / (sets_sum + epsilon)
+    # return dice.mean()
+
     assert input.size() == target.size()
     assert input.dim() == 3 or not reduce_batch_first
 
+    # Determine summation dimensions
     sum_dim = (-1, -2) if input.dim() == 2 or not reduce_batch_first else (-1, -2, -3)
 
-    inter = 2 * (input * target).sum(dim=sum_dim)
-    sets_sum = input.sum(dim=sum_dim) + target.sum(dim=sum_dim)
-    sets_sum = torch.where(sets_sum == 0, inter, sets_sum)
+    # Compute intersection and union
+    intersection = (input * target).sum(dim=sum_dim)
+    union = input.sum(dim=sum_dim) + target.sum(dim=sum_dim) - intersection
 
-    dice = (inter + epsilon) / (sets_sum + epsilon)
-    return dice.mean()
+    # Avoid division by zero
+    union = torch.where(union == 0, union + epsilon, union)
+
+    # Compute IoU
+    iou = (intersection + epsilon) / (union + epsilon)
+
+    return iou.mean()
 
 
 def multiclass_dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, epsilon: float = 1e-6):
