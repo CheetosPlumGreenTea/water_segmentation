@@ -1,2 +1,2 @@
-python3 predict.py -i data/testing_dataset/image/* -m checkpoints/checkpoint_epoch266.pth
+python3 predict.py -i data/testing_dataset/pre_image/* -m checkpoints/e81_b5_lr3.pth
 python IOU.py
