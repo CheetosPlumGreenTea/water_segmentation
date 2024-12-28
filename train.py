@@ -86,6 +86,7 @@ def train_model(
     criterion = nn.CrossEntropyLoss() if model.n_classes > 1 else nn.BCEWithLogitsLoss()
     global_step = 0
 
+    best_IoU = 0.0
     # 5. Begin training
     for epoch in range(1, epochs + 1):
         model.train()
@@ -145,6 +146,14 @@ def train_model(
                                 histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
 
                         val_score = evaluate(model, val_loader, device, amp)
+                        if best_IoU < val_score:
+                            best_IoU = val_score
+                            Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
+                            state_dict = model.state_dict()
+                            state_dict['mask_values'] = dataset.mask_values
+                            torch.save(state_dict, str(dir_checkpoint / 'best_model.pth'.format(epoch)))
+                            logging.info(f'New best_model saved!')
+                        
                         #if epoch > 50:
                         #scheduler.step(val_score)
 
